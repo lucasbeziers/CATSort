@@ -66,3 +66,17 @@ def test_performance_monotrode():
     assert perf['accuracy'].mean() > 0.25
     assert perf['recall'].mean() > 0.25
     assert perf['precision'].mean() > 0.25
+
+def test_scheme_adaptive():
+     recording, sorting_gt = toy_example(
+        duration=10,
+        num_channels=4,
+        num_units=5, 
+        sampling_frequency=30000,
+        num_segments=1
+    )
+    
+     adaptive_parameters = sorter.DEFAULT_PARAMS.copy()
+     adaptive_parameters['scheme'] = 'adaptive'
+     sorting = sorter.run_catsort(recording, params=adaptive_parameters)
+     assert True
