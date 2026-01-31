@@ -1,0 +1,33 @@
+[project]
+name = "CATSort"
+version = "0.1.0"
+authors = [
+  { name="Lucas Beziers", email="lucas.beziers.pro@gmail.com" },
+]
+description = "A collision-aware template matching spike sorter."
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "isosplit6",
+    "numba",
+    "numpy",
+    "scikit-learn",
+    "scipy",
+    "spikeinterface>=0.103.1",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.31.0",
+    "mearec",
+    "pandas",
+    "pytest",
+]
