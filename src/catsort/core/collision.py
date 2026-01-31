@@ -1,5 +1,33 @@
 import numpy as np
 from scipy.signal import resample
+from scipy.stats import median_abs_deviation
+
+
+def compute_fixed_thresholds(
+    features: dict,
+    mad_multipliers: dict
+) -> dict:
+    """
+    Compute thresholds for collision features using fixed MAD multipliers.
+    Threshold = median + MAD_multiplier * MAD
+    
+    Args:
+        features: Dictionary with feature values (amplitude, width, energy)
+        mad_multipliers: Dictionary with MAD multipliers for each feature
+        
+    Returns:
+        Dictionary with thresholds for each feature
+    """
+    thresholds = {}
+    for criterion, values in features.items():
+        if criterion in mad_multipliers:
+            median_val = np.median(values)
+            mad_val = median_abs_deviation(values)
+            thresholds[criterion] = median_val + mad_multipliers[criterion] * mad_val
+        else:
+            # Default to max value (no flagging) if multiplier not specified
+            thresholds[criterion] = np.max(values)
+    return thresholds
 
 def longest_true_runs(arr: np.ndarray) -> np.ndarray:
     """

@@ -9,7 +9,8 @@ from catsort.core.utils import get_peaks_traces_best_channel, get_peaks_traces_a
 from catsort.core.collision import (
     compute_collision_features, 
     detect_temporal_collisions, 
-    optimize_collision_thresholds
+    optimize_collision_thresholds,
+    compute_fixed_thresholds
 )
 from catsort.core.clustering import isosplit6_subdivision_method
 
@@ -23,7 +24,14 @@ DEFAULT_PARAMS = {
     'ms_before_spike_detected': 1.0,
     'ms_after_spike_detected': 1.0,
     'refractory_period': 2.0,
-    'false_positive_tolerance': 0.05,
+    'scheme': 'original',  # 'original' or 'adaptive'
+ 
+    # Original scheme parameters
+    'mad_multiplier_amplitude': 7.0,
+    'mad_multiplier_width': 10.0,
+    'mad_multiplier_energy': 15.0,   
+    # Adaptive scheme parameters
+    'false_positive_tolerance': 0.05,  # Used when scheme='adaptive'
     
     # Clustering
     'n_pca_components': 10,
@@ -98,13 +106,26 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
         params['refractory_period']
     )
     
-    # Compute features and optimize thresholds
+    # Compute features and thresholds based on scheme
     collision_features = compute_collision_features(traces_best, sampling_freq)
-    thresholds = optimize_collision_thresholds(
-        collision_features, 
-        too_close, 
-        params['false_positive_tolerance']
-    )
+    
+    if params['scheme'] == 'adaptive':
+        thresholds = optimize_collision_thresholds(
+            collision_features, 
+            too_close, 
+            params['false_positive_tolerance']
+        )
+    elif params['scheme'] == 'original':
+        mad_multipliers = {
+            'amplitude': params['mad_multiplier_amplitude'],
+            'width': params['mad_multiplier_width'],
+            'energy': params['mad_multiplier_energy']
+        }
+        thresholds = compute_fixed_thresholds(collision_features, mad_multipliers)
+    else:
+        raise ValueError(f"Unknown scheme: {params['scheme']}. Must be 'adaptive' or 'original'.")
+    
+    print(f"  Scheme: {params['scheme']}")
     
     # Flag collisions
     is_collision = too_close.copy()
