@@ -1,9 +1,8 @@
 name: Publish to PyPI
 
 on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+*' # Trigger on any numeric version tag (e.g., 0.1.1)
+  release:
+    types: [published] # Triggers when you create a release on GitHub manually
 
 jobs:
   publish:
