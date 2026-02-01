@@ -18,4 +18,4 @@ uv.lock
 .vscode/
 
 # Local files
-*/local*
+*local_*
