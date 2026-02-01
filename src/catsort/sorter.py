@@ -38,7 +38,7 @@ DEFAULT_PARAMS = {
     'npca_per_subdivision': 10,
     
     # Template matching
-    'tm_method': 'wobble', # 'circus' or 'wobble'
+    'tm_method': 'wobble', # 'wobble' only for now
     
     # Template matching (Wobble)
     'threshold_wobble': 5000,
