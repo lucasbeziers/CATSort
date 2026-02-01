@@ -1,13 +1,26 @@
 [project]
 name = "CATSort"
 version = "0.1.0"
-authors = [
-  { name="Lucas Beziers", email="lucas.beziers.pro@gmail.com" },
-]
 description = "A collision-aware template matching spike sorter."
 readme = "README.md"
 requires-python = ">=3.9"
-
+license = { text = "MIT" }
+authors = [
+  { name="Lucas Beziers", email="lucas.beziers.pro@gmail.com" },
+]
+keywords = ["spike sorting", "neuroscience", "electrophysiology", "collisions", "template matching"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
 dependencies = [
     "isosplit6",
     "numba",
@@ -16,6 +29,11 @@ dependencies = [
     "scipy",
     "spikeinterface>=0.103.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/lucasbeziers/CATSort"
+Repository = "https://github.com/lucasbeziers/CATSort"
+Issues = "https://github.com/lucasbeziers/CATSort/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -30,4 +48,5 @@ dev = [
     "mearec",
     "pandas",
     "pytest",
+    "twine",
 ]
