@@ -52,4 +52,4 @@ dev = [
 ]
 
 [tool.uv.scripts]
-bump = "python scripts/bump.py"
+bump = "python .scripts/bump.py"
