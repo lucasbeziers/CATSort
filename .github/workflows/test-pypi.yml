@@ -1,0 +1,29 @@
+name: Test Publish to TestPyPI
+
+on:
+  push:
+    branches:
+      - testpypi # Trigger on push to testpypi branch
+
+jobs:
+  test-publish:
+    name: Build and publish to TestPyPI
+    runs-on: ubuntu-latest
+    environment: testpypi # Must match the environment name in Trusted Publisher
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
