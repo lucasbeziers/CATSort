@@ -1,17 +1,17 @@
-name: Test Publish to TestPyPI
+name: Publish to TestPyPI
 
 on:
   push:
-    branches:
-      - testpypi # Trigger on push to testpypi branch
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*' # Trigger on any numeric version tag (e.g., 0.1.1)
 
 jobs:
   test-publish:
     name: Build and publish to TestPyPI
     runs-on: ubuntu-latest
-    environment: testpypi # Must match the environment name in Trusted Publisher
+    environment: testpypi
     permissions:
-      id-token: write # Required for OIDC authentication
+      id-token: write
       contents: read
 
     steps:
