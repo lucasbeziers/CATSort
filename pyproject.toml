@@ -50,3 +50,6 @@ dev = [
     "pytest",
     "twine",
 ]
+
+[tool.uv.scripts]
+bump = "python scripts/bump.py"
