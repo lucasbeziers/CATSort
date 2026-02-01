@@ -1,5 +1,9 @@
 # CATSort
 
+<p align="center">
+  <img src="docs/thumbnail.png" width="800">
+</p>
+
 **CATSort** (Collision-Aware Template-matching Sort) is a robust spike sorter designed to handle overlapping spikes (collisions) with high precision using a specific collision-handling stage before clustering followed by template matching.
 
 ## Key Features
