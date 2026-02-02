@@ -1,4 +1,3 @@
-from spikeinterface.core import generate_recording, generate_sorting, generate_snippets
 from spikeinterface.extractors import toy_example
 from spikeinterface.comparison import compare_sorter_to_ground_truth
 
