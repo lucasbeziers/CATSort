@@ -89,14 +89,13 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
     )
     
     sampling_freq = recording.get_sampling_frequency()
-    traces = recording.get_traces()
     
     n_before = int(sampling_freq * params['ms_before_spike_detected'] * 0.001)
     n_after = int(sampling_freq * params['ms_after_spike_detected'] * 0.001)
     
     print("Step 2: Collision handling...")
     # Extract best channel traces for collision feature computation
-    traces_best = get_peaks_traces_best_channel(peaks_detected, traces, n_before, n_after)
+    traces_best = get_peaks_traces_best_channel(peaks_detected, recording, n_before, n_after)
     
     # Temporal collisions
     too_close = detect_temporal_collisions(
@@ -140,7 +139,7 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
     
     print("Step 3: Clustering non-collided spikes...")
     mask_not_collided = ~is_collision
-    traces_all_not_collided = get_peaks_traces_all_channels(peaks_detected[mask_not_collided], traces, n_before, n_after)
+    traces_all_not_collided = get_peaks_traces_all_channels(peaks_detected[mask_not_collided], recording, n_before, n_after)
     
     # PCA and Clustering
     num_spikes, num_samples, num_channels = traces_all_not_collided.shape
