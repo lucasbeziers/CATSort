@@ -1,10 +1,10 @@
 # CATSort
 
 <p align="center">
-  <img src="docs/thumbnail.png" width="800">
+  <img src="https://raw.githubusercontent.com/lucasbeziers/CATSort/main/docs/thumbnail.png" width="800">
 </p>
 
-**CATSort** (Collision-Aware with Template matching Sort) is a robust spike sorter designed to handle overlapping spikes (collisions) with high precision using a specific collision-handling stage before clustering followed by template matching.
+**CATSort** (Collision-Aware using Templates Sort) is a robust spike sorter designed to handle overlapping spikes (collisions) with high precision using a specific collision-handling stage before clustering followed by template matching.
 
 ## Key Features
 
@@ -57,4 +57,4 @@ CATSort offers several parameters to fine-tune its behavior:
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/lucasbeziers/CATSort/blob/main/LICENSE) for details.

@@ -59,7 +59,7 @@ def get_sorting_analyzer_with_computations(
 
 def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> NumpySorting:
     """
-    Main entry point for Catsort (Collision Aware Template-matching sort).
+    Main entry point for CATSort (Collision-Aware using Templates Sort).
     
     Args:
         recording: spikeinterface recording object
