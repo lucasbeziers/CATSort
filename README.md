@@ -4,12 +4,12 @@
   <img src="https://raw.githubusercontent.com/lucasbeziers/CATSort/main/docs/thumbnail.png" width="800">
 </p>
 
-**CATSort** (Collision-Aware using Templates Sort) is a robust spike sorter designed to handle overlapping spikes (collisions) with high precision using a specific collision-handling stage before clustering followed by template matching.
+**CATSort** (Collision-Aware Template Sort) is a robust spike sorter designed to handle overlapping spikes (collisions) with high precision using a specific collision-handling stage before clustering followed by template matching.
 
 ## Key Features
 
 - **Collision Handling**: Automatically identifies and flags collided spikes using multi-criterion feature analysis (amplitude, width, energy).
-- **Template Matching**: Robust spike extraction using template-based matching (including 'wobble' for now).
+- **Template Matching**: Robust spike extraction using template matching (including 'wobble' for now).
 - **Flexible Schemes**: Choose between an `adaptive` threshold optimization or an `original` fixed MAD (Median Absolute Deviation) multiplier scheme.
 - **SpikeInterface Integration**: Fully compatible with the [SpikeInterface](https://github.com/SpikeInterface/spikeinterface) ecosystem.
 
