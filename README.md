@@ -55,6 +55,12 @@ CATSort offers several parameters to fine-tune its behavior:
 - `mad_multiplier_amplitude`, `mad_multiplier_width`, `mad_multiplier_energy`: (Default: `7.0`, `10.0`, `15.0`) Used when `scheme='original'`.
 - `detect_threshold`: Spike detection threshold in standard deviations (Default: `5`).
 
+## Acknowledgments
+
+- [SpikeInterface](https://github.com/SpikeInterface/spikeinterface): core ecosystem for recording/sorting objects and processing components used.
+- [MountainSort5](https://github.com/flatironinstitute/mountainsort5): clustering approach adapted in the clustering module.
+- [Isosplit6](https://github.com/magland/isosplit6): algorithm used during the clustering stage.
+
 ## License
 
 MIT License. See [LICENSE](https://github.com/lucasbeziers/CATSort/blob/main/LICENSE) for details.
