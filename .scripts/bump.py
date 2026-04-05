@@ -1,7 +1,8 @@
-import sys
 import re
-from pathlib import Path
 import subprocess
+import sys
+from pathlib import Path
+
 
 def bump(new_version):
     # Ensure version format is correct (basic check)
@@ -31,9 +32,10 @@ def bump(new_version):
         subprocess.run(["git", "commit", "-m", f"chore: bump version to {new_version}"], check=True)
         subprocess.run(["git", "tag", "-a", f"{new_version}", "-m", f"Release {new_version}"], check=True)
         print(f"\nSuccessfully bumped to {new_version}!")
-        print(f"Now run: git push origin --description --tags")
+        print("Now run: git push origin --description --tags")
     except subprocess.CalledProcessError as e:
         print(f"Error during git operations: {e}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "CATSort"
 version = "1.0.2"
@@ -5,10 +9,14 @@ description = "A collision-aware template matching spike sorter."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [
-  { name="Lucas Beziers", email="lucas.beziers.pro@gmail.com" },
+authors = [{ name = "Lucas Beziers", email = "lucas.beziers.pro@gmail.com" }]
+keywords = [
+    "spike sorting",
+    "neuroscience",
+    "electrophysiology",
+    "collisions",
+    "template matching",
 ]
-keywords = ["spike sorting", "neuroscience", "electrophysiology", "collisions", "template matching"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -30,23 +38,21 @@ dependencies = [
     "spikeinterface>=0.103.1",
 ]
 
+[dependency-groups]
+dev = ["ipykernel>=6.31.0", "mearec", "pandas", "pytest", "ruff", "twine"]
+
 [project.urls]
 Homepage = "https://github.com/lucasbeziers/CATSort"
 Repository = "https://github.com/lucasbeziers/CATSort"
 Issues = "https://github.com/lucasbeziers/CATSort/issues"
 
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[dependency-groups]
-dev = [
-    "ipykernel>=6.31.0",
-    "mearec",
-    "pandas",
-    "pytest",
-    "twine",
-]
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = []
