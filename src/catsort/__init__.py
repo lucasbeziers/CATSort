@@ -3,3 +3,5 @@
 __version__ = "1.0.2"
 
 from .sorter import DEFAULT_PARAMS, run_catsort
+
+__all__ = ["DEFAULT_PARAMS", "run_catsort"]
