@@ -13,8 +13,19 @@ from catsort.core.collision import (
     compute_fixed_thresholds
 )
 from catsort.core.clustering import isosplit6_subdivision_method
+from catsort.core.preprocessing import preprocess_recording
 
 DEFAULT_PARAMS = {
+    # Preprocessing
+    'apply_preprocessing': True,
+    'preprocess_normalize': True,
+    'preprocess_freq_min': 300,
+    'preprocess_freq_max': 3000,
+    'preprocess_ftype': 'bessel',
+    'preprocess_filter_order': 3,
+    'preprocess_margin_ms': 10.0,
+    'preprocess_whitening': False,
+    
     # Detection
     'detect_threshold': 5,
     'exclude_sweep_ms': 0.2,
@@ -41,7 +52,7 @@ DEFAULT_PARAMS = {
     'tm_method': 'wobble', # 'wobble' only for now
     
     # Template matching (Wobble)
-    'threshold_wobble': 5000,
+    'threshold_wobble': 1,
     'jitter_factor_wobble': 24,
     'refractory_period_ms_wobble': 2.0,
 }
@@ -76,6 +87,19 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
         full_params.update(params)
         params = full_params
 
+    if params['apply_preprocessing']:
+        print("Step 0: Preprocessing...")
+        recording = preprocess_recording(
+            recording,
+            normalize=params['preprocess_normalize'],
+            freq_min=params['preprocess_freq_min'],
+            freq_max=params['preprocess_freq_max'],
+            ftype=params['preprocess_ftype'],
+            filter_order=params['preprocess_filter_order'],
+            margin_ms=params['preprocess_margin_ms'],
+            whitening=params['preprocess_whitening']
+        )
+    
     print("Step 1: Detecting spikes...")
     peaks_detected = detect_peaks(
         recording=recording,
