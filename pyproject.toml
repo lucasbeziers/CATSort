@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ipykernel>=6.31.0", "mearec", "pandas", "pytest", "twine"]
+dev = ["ipykernel>=6.31.0", "mearec", "pandas", "pytest", "ruff", "twine"]
 
 [project.urls]
 Homepage = "https://github.com/lucasbeziers/CATSort"
@@ -48,3 +48,11 @@ Issues = "https://github.com/lucasbeziers/CATSort/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = []
