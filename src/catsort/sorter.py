@@ -1,66 +1,67 @@
-import numpy as np
 from typing import Optional
-from spikeinterface.core import BaseRecording, NumpySorting, SortingAnalyzer, Templates, ChannelSparsity, create_sorting_analyzer
-from spikeinterface.sortingcomponents.peak_detection import detect_peaks
+
+import numpy as np
 import spikeinterface.sortingcomponents.matching as sm
 from sklearn.decomposition import PCA
-
-from catsort.core.utils import get_peaks_traces_best_channel, get_peaks_traces_all_channels
-from catsort.core.collision import (
-    compute_collision_features, 
-    detect_temporal_collisions, 
-    optimize_collision_thresholds,
-    compute_fixed_thresholds
+from spikeinterface.core import (
+    BaseRecording,
+    ChannelSparsity,
+    NumpySorting,
+    SortingAnalyzer,
+    Templates,
+    create_sorting_analyzer,
 )
+from spikeinterface.sortingcomponents.peak_detection import detect_peaks
+
 from catsort.core.clustering import isosplit6_subdivision_method
+from catsort.core.collision import (
+    compute_collision_features,
+    compute_fixed_thresholds,
+    detect_temporal_collisions,
+    optimize_collision_thresholds,
+)
 from catsort.core.preprocessing import preprocess_recording
+from catsort.core.utils import get_peaks_traces_all_channels, get_peaks_traces_best_channel
 
 DEFAULT_PARAMS = {
     # Preprocessing
-    'apply_preprocessing': True,
-    'preprocess_normalize': True,
-    'preprocess_freq_min': 300,
-    'preprocess_freq_max': 3000,
-    'preprocess_ftype': 'bessel',
-    'preprocess_filter_order': 3,
-    'preprocess_margin_ms': 10.0,
-    'preprocess_whitening': False,
-    
+    "apply_preprocessing": True,
+    "preprocess_normalize": True,
+    "preprocess_freq_min": 300,
+    "preprocess_freq_max": 3000,
+    "preprocess_ftype": "bessel",
+    "preprocess_filter_order": 3,
+    "preprocess_margin_ms": 10.0,
+    "preprocess_whitening": False,
     # Detection
-    'detect_threshold': 5,
-    'exclude_sweep_ms': 0.2,
-    'radius_um': 100,
-    
+    "detect_threshold": 5,
+    "exclude_sweep_ms": 0.2,
+    "radius_um": 100,
     # Collision analysis
-    'ms_before_spike_detected': 1.0,
-    'ms_after_spike_detected': 1.0,
-    'refractory_period': 2.0,
-    'scheme': 'original',  # 'original' or 'adaptive'
- 
+    "ms_before_spike_detected": 1.0,
+    "ms_after_spike_detected": 1.0,
+    "refractory_period": 2.0,
+    "scheme": "original",  # 'original' or 'adaptive'
     # Original scheme parameters
-    'mad_multiplier_amplitude': 7.0,
-    'mad_multiplier_width': 10.0,
-    'mad_multiplier_energy': 15.0,   
+    "mad_multiplier_amplitude": 7.0,
+    "mad_multiplier_width": 10.0,
+    "mad_multiplier_energy": 15.0,
     # Adaptive scheme parameters
-    'false_positive_tolerance': 0.05,  # Used when scheme='adaptive'
-    
+    "false_positive_tolerance": 0.05,  # Used when scheme='adaptive'
     # Clustering
-    'n_pca_components': 10,
-    'npca_per_subdivision': 10,
-    
+    "n_pca_components": 10,
+    "npca_per_subdivision": 10,
     # Template matching
-    'tm_method': 'wobble', # 'wobble' only for now
-    
+    "tm_method": "wobble",  # 'wobble' only for now
     # Template matching (Wobble)
-    'threshold_wobble': 1,
-    'jitter_factor_wobble': 24,
-    'refractory_period_ms_wobble': 2.0,
+    "threshold_wobble": 1,
+    "jitter_factor_wobble": 24,
+    "refractory_period_ms_wobble": 2.0,
 }
 
+
 def get_sorting_analyzer_with_computations(
-    sorting: NumpySorting,
-    recording: BaseRecording,
-    ms_before: float, ms_after: float
+    sorting: NumpySorting, recording: BaseRecording, ms_before: float, ms_after: float
 ) -> SortingAnalyzer:
     sorting_analyzer = create_sorting_analyzer(sorting, recording, return_in_uV=True)
     sorting_analyzer.compute("random_spikes", method="uniform", max_spikes_per_unit=np.inf)
@@ -68,14 +69,15 @@ def get_sorting_analyzer_with_computations(
     sorting_analyzer.compute("templates", operators=["average", "median", "std"])
     return sorting_analyzer
 
+
 def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> NumpySorting:
     """
     Main entry point for CATSort (Collision-Aware Template Sort).
-    
+
     Args:
         recording: spikeinterface recording object
         params: dictionary of parameters (optional)
-        
+
     Returns:
         sorting: spikeinterface sorting object
     """
@@ -87,69 +89,62 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
         full_params.update(params)
         params = full_params
 
-    if params['apply_preprocessing']:
+    if params["apply_preprocessing"]:
         print("Step 0: Preprocessing...")
         recording = preprocess_recording(
             recording,
-            normalize=params['preprocess_normalize'],
-            freq_min=params['preprocess_freq_min'],
-            freq_max=params['preprocess_freq_max'],
-            ftype=params['preprocess_ftype'],
-            filter_order=params['preprocess_filter_order'],
-            margin_ms=params['preprocess_margin_ms'],
-            whitening=params['preprocess_whitening']
+            normalize=params["preprocess_normalize"],
+            freq_min=params["preprocess_freq_min"],
+            freq_max=params["preprocess_freq_max"],
+            ftype=params["preprocess_ftype"],
+            filter_order=params["preprocess_filter_order"],
+            margin_ms=params["preprocess_margin_ms"],
+            whitening=params["preprocess_whitening"],
         )
-    
+
     print("Step 1: Detecting spikes...")
     peaks_detected = detect_peaks(
         recording=recording,
         method="locally_exclusive",
         method_kwargs={
             "peak_sign": "neg",
-            "detect_threshold": params['detect_threshold'],
-            "exclude_sweep_ms": params['exclude_sweep_ms'],
-            "radius_um": params['radius_um'],
+            "detect_threshold": params["detect_threshold"],
+            "exclude_sweep_ms": params["exclude_sweep_ms"],
+            "radius_um": params["radius_um"],
         },
     )
-    
+
     sampling_freq = recording.get_sampling_frequency()
-    
-    n_before = int(sampling_freq * params['ms_before_spike_detected'] * 0.001)
-    n_after = int(sampling_freq * params['ms_after_spike_detected'] * 0.001)
-    
+
+    n_before = int(sampling_freq * params["ms_before_spike_detected"] * 0.001)
+    n_after = int(sampling_freq * params["ms_after_spike_detected"] * 0.001)
+
     print("Step 2: Collision handling...")
     # Extract best channel traces for collision feature computation
     traces_best = get_peaks_traces_best_channel(peaks_detected, recording, n_before, n_after)
-    
+
     # Temporal collisions
     too_close = detect_temporal_collisions(
-        peaks_detected['sample_index'], 
-        peaks_detected['channel_index'], 
-        sampling_freq, 
-        params['refractory_period']
+        peaks_detected["sample_index"], peaks_detected["channel_index"], sampling_freq, params["refractory_period"]
     )
-    
+
     # Compute features and thresholds based on scheme
     collision_features = compute_collision_features(traces_best, sampling_freq)
-    
-    if params['scheme'] == 'adaptive':
-        thresholds = optimize_collision_thresholds(
-            collision_features, 
-            too_close, 
-            params['false_positive_tolerance']
-        )
-    elif params['scheme'] == 'original':
+
+    if params["scheme"] == "adaptive":
+        thresholds = optimize_collision_thresholds(collision_features, too_close, params["false_positive_tolerance"])
+    elif params["scheme"] == "original":
         mad_multipliers = {
-            'amplitude': params['mad_multiplier_amplitude'],
-            'width': params['mad_multiplier_width'],
-            'energy': params['mad_multiplier_energy']
+            "amplitude": params["mad_multiplier_amplitude"],
+            "width": params["mad_multiplier_width"],
+            "energy": params["mad_multiplier_energy"],
         }
         thresholds = compute_fixed_thresholds(collision_features, mad_multipliers)
     else:
         raise ValueError(f"Unknown scheme: {params['scheme']}. Must be 'adaptive' or 'original'.")
-    
+
     print(f"  Scheme: {params['scheme']}")
-    
+
     # Flag collisions
     is_collision = too_close.copy()
     print(f"  Temporal collisions: {np.sum(too_close)}")
@@ -158,78 +153,74 @@ def run_catsort(recording: BaseRecording, params: Optional[dict] = None) -> Nump
         flagged_by_crit_not_too_close = flagged_by_crit & ~too_close
         print(f"  {crit}: {np.sum(flagged_by_crit_not_too_close)} additional collisions")
         is_collision |= flagged_by_crit
-        
+
     print(f"  Total flagged: {np.sum(is_collision)} collisions out of {len(peaks_detected)} spikes")
-    
+
     print("Step 3: Clustering non-collided spikes...")
     mask_not_collided = ~is_collision
-    traces_all_not_collided = get_peaks_traces_all_channels(peaks_detected[mask_not_collided], recording, n_before, n_after)
-    
+    traces_all_not_collided = get_peaks_traces_all_channels(
+        peaks_detected[mask_not_collided], recording, n_before, n_after
+    )
+
     # PCA and Clustering
     num_spikes, num_samples, num_channels = traces_all_not_collided.shape
     concatenated = traces_all_not_collided.reshape(num_spikes, -1)
-    pca = PCA(n_components=params['n_pca_components'])
+    pca = PCA(n_components=params["n_pca_components"])
     features_not_collided = pca.fit_transform(concatenated)
-    
+
     labels_not_collided = isosplit6_subdivision_method(
-        features_not_collided, 
-        npca_per_subdivision=params['npca_per_subdivision']
+        features_not_collided, npca_per_subdivision=params["npca_per_subdivision"]
     )
-    
+
     # Create sorting with clusters for template computation
-    samples_clean = peaks_detected[mask_not_collided]['sample_index']
+    samples_clean = peaks_detected[mask_not_collided]["sample_index"]
     labels_clean = labels_not_collided
 
     sorting_clean = NumpySorting.from_samples_and_labels(
-        samples_list=[samples_clean],
-        labels_list=[labels_clean],
-        sampling_frequency=sampling_freq
+        samples_list=[samples_clean], labels_list=[labels_clean], sampling_frequency=sampling_freq
     )
-    
+
     print("Step 4: Template Matching...")
     # Compute templates from clean clusters
     analyzer = get_sorting_analyzer_with_computations(
-        sorting_clean, recording, 
-        params['ms_before_spike_detected'], 
-        params['ms_after_spike_detected']
+        sorting_clean, recording, params["ms_before_spike_detected"], params["ms_after_spike_detected"]
     )
-    
-    templates_ext = analyzer.get_extension('templates')
+
+    templates_ext = analyzer.get_extension("templates")
     sparsity = ChannelSparsity.create_dense(analyzer)
-    
+
     templates = Templates(
-        templates_array=templates_ext.data['average'],
+        templates_array=templates_ext.data["average"],
         sampling_frequency=sampling_freq,
         nbefore=templates_ext.nbefore,
         is_in_uV=True,
         sparsity_mask=sparsity.mask,
         channel_ids=analyzer.channel_ids,
         unit_ids=analyzer.unit_ids,
-        probe=analyzer.get_probe()
+        probe=analyzer.get_probe(),
     )
-    
-    if params['tm_method'] == 'wobble':
+
+    if params["tm_method"] == "wobble":
         spikes_tm = sm.find_spikes_from_templates(
             recording=recording,
             templates=templates,
-            method='wobble',
-            
+            method="wobble",
             method_kwargs={
                 "parameters": {
-                    "threshold": params['threshold_wobble'],
-                    "jitter_factor": params['jitter_factor_wobble'],
-                    "refractory_period_frames": int(sampling_freq * params['refractory_period_ms_wobble'] * 0.001),
-                    "scale_amplitudes": True
+                    "threshold": params["threshold_wobble"],
+                    "jitter_factor": params["jitter_factor_wobble"],
+                    "refractory_period_frames": int(sampling_freq * params["refractory_period_ms_wobble"] * 0.001),
+                    "scale_amplitudes": True,
                 },
-            }
+            },
         )
     else:
         raise ValueError(f"Unknown template matching method: {params['tm_method']}")
-        
+
     final_sorting = NumpySorting.from_samples_and_labels(
-        samples_list=[spikes_tm['sample_index']],
-        labels_list=[spikes_tm['cluster_index']],
-        sampling_frequency=sampling_freq
+        samples_list=[spikes_tm["sample_index"]],
+        labels_list=[spikes_tm["cluster_index"]],
+        sampling_frequency=sampling_freq,
     )
-    
+
     return final_sorting
